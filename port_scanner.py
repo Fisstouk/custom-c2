@@ -13,9 +13,6 @@ def network_address():
             netmask = iface_details[netifaces.AF_INET][0]['netmask']
             # Build network addr + netmask
             interface = ipaddress.IPv4Interface(ipv4 + '/' + netmask)
-            print(f"The program found the network {interface.network}.")
-            print("You have the ability to scan it to find systems that are up.")
-        
-        
-
+            print(f"The programm found the network {interface.network}.")
+            print("You have the ability to scan it to find systems on the network that are up.")
 
