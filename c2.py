@@ -7,7 +7,8 @@ def main():
 
     # Print help when no argument is given
     parser.add_argument(' ',  default='-h')
-    parser.add_argument('--get-all-ip', type=network_address(), help='Find the network ID of the machine where the script is running')
+    parser.add_argument('--get-all-ip', type=network_address(), help='Print all the ip addresses of the host in a text file')
+    parser.add_argument('--check-ping', type=check_ping(), help='Ping each ip in a text file and keep systems up in another text file')
 
     args = parser.parse_args()
 
