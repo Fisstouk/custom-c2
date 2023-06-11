@@ -7,7 +7,7 @@ def main():
 
     # Print help when no argument is given
     parser.add_argument(' ',  default='-h')
-    parser.add_argument('--find-network-id', type=network_address(), help='Find the network ID of the machine where the script is running')
+    parser.add_argument('--get-all-ip', type=network_address(), help='Find the network ID of the machine where the script is running')
 
     args = parser.parse_args()
 

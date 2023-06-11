@@ -14,5 +14,12 @@ def network_address():
             # Build network addr + netmask
             interface = ipaddress.IPv4Interface(ipv4 + '/' + netmask)
             print(f"The programm found the network {interface.network}.")
-            print("You have the ability to scan it to find systems on the network that are up.")
+    try:
+        with open('data/hosts_in_network.txt', 'w') as f:
+            for ip in interface.network.hosts():
+                f.write(format(ipaddress.IPv4Address(ip))+"\n")
+            print("All IP addresses in the network are written in the file hosts_in_network.txt")
+    except FileExistsError:
+        print("The file hosts_in_network.txt already exists. End of the programm")
+            
 
