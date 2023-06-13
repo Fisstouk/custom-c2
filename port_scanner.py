@@ -4,7 +4,7 @@ import socket
 import subprocess
 import sys
 import time
-"""
+
 def network_address() -> None:
     # Get all network interfaces except localhost
     for iface in netifaces.interfaces():
@@ -43,16 +43,20 @@ def check_ping() -> None:
                     print("No response from", ip)
     except FileNotFoundError as e:
         print(f"Error: {e}")
-"""
+
 def port_scan(ending_port:int) -> None:
     try:
-        for port in range(1, port_end):
+        for port in range(1, ending_port):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            print(sock)
             try:
                 with open('data/hosts_up.txt', 'r') as f:
                     for host in f:
-                        if sock.connect_ex((host, port)) == 0:
-                            print(f"{port} on host {host} is open")
+                        if sock.connect_ex((host.rstrip(), port)) == 0:
+                            with open('data/ports_open.txt', 'w') as file:
+                                print(host, port)
+                                file.write("{port} on host {host} is open")
+                    sock.close()
             except FileNotFoundError as e:
                 print(f"Error: {e}")
     except KeyboardInterrupt:
@@ -64,5 +68,3 @@ def port_scan(ending_port:int) -> None:
     except socket.error:
         print("\n Server not responding")
         sys.exit() 
-        
-
