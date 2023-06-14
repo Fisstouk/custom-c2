@@ -30,7 +30,7 @@ def network_address() -> None:
 def check_ping() -> None:
     try:
         with open('data/hosts_in_network.txt', 'r') as f:
-            for ip in f:
+            for ip in f.readlines():
                 res = subprocess.call(['ping', '-c', '3', ip.rstrip()])
                 time.sleep(1)
                 if res == 0:
@@ -44,24 +44,28 @@ def check_ping() -> None:
     except FileNotFoundError as e:
         print(f"Error: {e}")
 
-def port_scan(ending_port:int) -> None:
+def port_scan(starting_port:int, ending_port:int) -> None:
+    # print(f"starting port: {starting_port}, ending port: {ending_port}")
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket.setdefaulttimeout(1)
+    # print(sock)
+
     try:
-        for port in range(1, ending_port):
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            print(sock)
+        for port in range(starting_port , ending_port + 1):
             try:
                 with open('data/hosts_up.txt', 'r') as f:
-                    for host in f:
+                    for host in f.readlines():
+                        # print(f"host: {host}, port: {port}")
                         if sock.connect_ex((host.rstrip(), port)) == 0:
                             with open('data/ports_open.txt', 'w') as file:
-                                print(host, port)
-                                file.write("{port} on host {host} is open")
-                    sock.close()
+                                # print(host, port)
+                                print(f"New entry in the ports_open.txt file: port {port} on host {host.rstrip()} is open")
+                                file.write(f"{port} on host {host.rstrip()} is open")
             except FileNotFoundError as e:
                 print(f"Error: {e}")
-    except KeyboardInterrupt:
-        print("\n Exiting Program")
-        sys.exit()
+        sock.close()
+
     except socket.gaierror:
         print("\n Hostname could not be resolved")
         sys.exit()
