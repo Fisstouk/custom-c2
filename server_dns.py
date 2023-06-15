@@ -1,38 +1,27 @@
-import os
-import datetime
+import dns.query
+import dns.message
+import base64
 
-from dnslib.server import DNSServer
-from dnslib.dns import RR
-from dnslib import QTYPE
+def encode_data(data):
+    encoded_data = base64.b64encode(data.encode('utf-8')).decode('utf-8')
+    return encoded_data
 
-import base58
+def send_data_via_dns(data):
+    encoded_data = encode_data(data)
+    domain = 'example.com'  # Remplacez par un domaine fictif
 
+    for chunk_index in range(0, len(encoded_data), 5353):
+        chunk = encoded_data[chunk_index:chunk_index + 5353]
+        subdomain = chunk + '.' + domain
 
-TRANSFER_HOSTNAME = ".transfer.io"
-PORT = 8053
-OUTPUT_DIRECTORY = "/data"
+        request = dns.message.make_query(subdomain, dns.rdatatype.A)
+        response = dns.query.tcp(request, '127.0.0.1')  # Utilisez l'adresse IP locale
 
-class TransferResolver:
-    def resolve(self, request, handler):
-        qname = str(request.q.qname)
-        reply = request.reply()
-        if request.q.qtype != QTYPE.TXT:
-            return reply
-        if qname.endswith(f"{TRANSFER_HOSTNAME}."):
-            encoded_filepath, encoded_chunk = qname.replace(f"{TRANSFER_HOSTNAME}.", "").split(".")
-            decoded_filepath = base58.b58decode(encoded_filepath)
-            print(f"received chunk for file: {decoded_filepath}")
-            output_filepath = os.path.join(OUTPUT_DIRECTORY, encoded_filepath)
-            with open(output_filepath, "ab") as f:
-                decoded_chunk = base58.b58decode(encoded_chunk)
-                f.write(decoded_chunk)
-                reply.add_answer(*RR.fromZone(f"{qname} 1 TXT OK"))
-        return reply
+        # Vous pouvez traiter la réponse DNS ici si nécessaire
 
+        print(f"Sent: {subdomain}")
 
-if __name__ == "__main__":
-    resolver = TransferResolver()
-    logger = None
-    server = DNSServer(resolver, logger=logger, address="0.0.0.0", port=PORT)
-    print("starting DNS server!")
-    server.start()
+# Exemple d'utilisation
+data_to_send = 'Hello, world!'
+send_data_via_dns(data_to_send)
+

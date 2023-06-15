@@ -50,6 +50,7 @@ def port_scan(starting_port:int, ending_port:int) -> None:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket.setdefaulttimeout(1)
     # print(sock)
+    banner = sock.recv(1024).decode()
 
     try:
         for port in range(starting_port , ending_port + 1):
@@ -60,7 +61,7 @@ def port_scan(starting_port:int, ending_port:int) -> None:
                         if sock.connect_ex((host.rstrip(), port)) == 0:
                             with open('data/ports_open.txt', 'w') as file:
                                 # print(host, port)
-                                print(f"New entry in the ports_open.txt file: port {port} on host {host.rstrip()} is open")
+                                print(f"New entry in the ports_open.txt file: port {port} on host {host.rstrip()} is open with banner {banner}")
                                 file.write(f"{port} on host {host.rstrip()} is open")
             except FileNotFoundError as e:
                 print(f"Error: {e}")
