@@ -1,5 +1,6 @@
 import argparse
 from port_scanner import *
+from server_encrypt import *
 import sys
 
 def main():
@@ -10,6 +11,7 @@ def main():
         parser.add_argument('-p', '--ping', dest='ping', action='store_true', help='Ping each ip in a text file and keep systems up in another text file')
         parser.add_argument('-s', '--port_scan', action='store', nargs=2, help='Scan ports from 1 to 1024 by default for each hosts in the file hosts_up.txt, can enter custom ports')
         parser.add_argument('-e', '--persistence', action='store_true', help='Add a persistence program to the target, Windows or Linux')
+        parser.add_argument('-r', '--receive_mode', action='store_true', help='Set the server into passive mode to receive encrypted data')
 
         args = parser.parse_args()
 
@@ -26,6 +28,8 @@ def main():
             port_scan(int(start_port), int(end_port))
         if args.persistence:
             win32serviceutil.HandleCommandLine(windows_persistence)
+        if args.receive_mode:
+            server_encryption()
 
         """        
         dict_choice = {
